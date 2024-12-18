@@ -318,7 +318,7 @@ class ReservationsPageState extends State<ReservationsPage> {
               ),
             ),
             SizedBox(
-              height: 300, // Înălțime fixă pentru lista de rezervări
+              height: 200, // Înălțime fixă pentru lista de rezervări
               child: Scrollbar(
                 thumbVisibility: true, // Vizibilitate permanentă pentru scrollbar
                 child: ListView.builder(
