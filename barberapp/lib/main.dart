@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -118,6 +119,16 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Rezervari'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReservationsPage()),
+                );
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.settings),
               title: Text('Setări'),
               onTap: () {
@@ -170,6 +181,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,6 +200,8 @@ class ProfilePage extends StatelessWidget {
 }
 
 class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,4 +218,95 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
+class ReservationsPage extends StatefulWidget {
+  const ReservationsPage({super.key});
+
+  @override
+  ReservationsPageState createState() => ReservationsPageState();
+}
+
+class ReservationsPageState extends State<ReservationsPage> {
+  late Map<DateTime, List<String>> _events;
+  late DateTime _selectedDay;
+  late TextEditingController _activityController;
+
+  @override
+  void initState() {
+    super.initState();
+    _events = {};
+    _selectedDay = DateTime.now();
+    _activityController = TextEditingController();
+  }
+
+  void _onDaySelected(DateTime day, DateTime focusedDay) {
+    setState(() {
+      _selectedDay = day;
+    });
+  }
+
+  void _addEvent() {
+    if (_activityController.text.isEmpty) return;
+
+    if (_events[_selectedDay] == null) {
+      _events[_selectedDay] = [];
+    }
+    _events[_selectedDay]!.add(_activityController.text);
+
+    setState(() {
+      _activityController.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Rezervări'),
+      ),
+      body: Column(
+        children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2020, 01, 01),
+            lastDay: DateTime.utc(2025, 12, 31),
+            focusedDay: _selectedDay,
+            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+            onDaySelected: _onDaySelected,
+            eventLoader: (day) {
+              return _events[day] ?? [];
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Selectează o activitate pentru data: ${_selectedDay.toLocal()}',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _activityController,
+              decoration: InputDecoration(
+                labelText: 'Activitate',
+                hintText: 'Ex: Tuns, Aranjat, etc.',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: _addEvent,
+            child: Text('Adaugă rezervare'),
+          ),
+          Expanded(
+            child: ListView(
+              children: _events[_selectedDay] != null
+                  ? _events[_selectedDay]!.map((event) => ListTile(title: Text(event))).toList()
+                  : [],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
