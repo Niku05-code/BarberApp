@@ -60,32 +60,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+         title: Text(widget.title),
       ),
        drawer: Drawer(
         child: ListView(
@@ -143,22 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
@@ -175,7 +144,145 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+    );
+  }
+}
+
+class LoginPage extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  LoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              decoration: InputDecoration(
+                labelText: 'Parolă',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true, // Ascunde textul cu steluțe
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Logica pentru autentificare
+                String email = emailController.text;
+                String password = passwordController.text;
+                print('Email: $email, Parolă: $password');
+              },
+              child: Text('Login'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterPage extends StatelessWidget {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  RegisterPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Register'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Nume',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: surnameController,
+              decoration: InputDecoration(
+                labelText: 'Prenume',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              decoration: InputDecoration(
+                labelText: 'Parolă',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true, // Ascunde textul cu steluțe
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: confirmPasswordController,
+              decoration: InputDecoration(
+                labelText: 'Confirmare parolă',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Logica pentru înregistrare
+                String name = nameController.text;
+                String surname = surnameController.text;
+                String email = emailController.text;
+                String password = passwordController.text;
+                String confirmPassword = confirmPasswordController.text;
+
+                if (password != confirmPassword) {
+                  print('Parolele nu se potrivesc!');
+                } else {
+                  print(
+                      'Nume: $name, Prenume: $surname, Email: $email, Parolă: $password');
+                }
+              },
+              child: Text('Register'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -190,9 +297,28 @@ class ProfilePage extends StatelessWidget {
         title: Text('Profil'),
       ),
       body: Center(
-        child: Text(
-          'Aceasta este pagina Profilului.',
-          style: TextStyle(fontSize: 18),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: Text('Login'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                );
+              },
+              child: Text('Register'),
+            ),
+          ],
         ),
       ),
     );
