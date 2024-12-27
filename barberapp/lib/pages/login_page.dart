@@ -1,9 +1,76 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: use_build_context_synchronously
 
-class LoginPage extends StatelessWidget {
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  LoginPage({super.key});
+  bool rememberMe = false;
+
+  Future<void> login() async {
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/login'), // Schimbă cu URL-ul backend-ului tău
+        body: jsonEncode({'email': email, 'password': password}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token']; // Presupunem că backend-ul returnează un token
+
+        if (rememberMe) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('authToken', token);
+        }
+
+        Navigator.pushReplacementNamed(context, '/home'); // Navighează la pagina principală
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Login Failed'),
+            content: Text('Invalid email or password.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Username sau parola gresite!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> checkAuth() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('authToken');
+
+  if (token != null) {
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +98,23 @@ class LoginPage extends StatelessWidget {
                 labelText: 'Parolă',
                 border: OutlineInputBorder(),
               ),
-              obscureText: true, // Ascunde textul cu steluțe
+              obscureText: true,
             ),
-            SizedBox(height: 16),
+            Row(
+              children: [
+                Checkbox(
+                  value: rememberMe,
+                  onChanged: (value) {
+                    setState(() {
+                      rememberMe = value!;
+                    });
+                  },
+                ),
+                Text('Remember Me'),
+              ],
+            ),
             ElevatedButton(
-              onPressed: () {
-                // Logica pentru autentificare
-                String email = emailController.text;
-                String password = passwordController.text;
-                print('Email: $email, Parolă: $password');
-              },
+              onPressed: login,
               child: Text('Login'),
             ),
           ],

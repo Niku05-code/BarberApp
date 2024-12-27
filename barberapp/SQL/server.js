@@ -17,8 +17,8 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '',
-  database: process.env.DB_NAME || 'flutter_app',
+  password: process.env.DB_PASS || 'NiCuLcES2580',
+  database: process.env.DB_NAME || 'BarberAppSQL',
 });
 
 // Conectarea la baza de date
@@ -30,23 +30,33 @@ db.connect((err) => {
   }
 });
 
-// Rute
 app.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
+
+  console.log('Date primite:', req.body);
 
   try {
+    // Combinăm numele și prenumele
+    const fullName = `${firstName} ${lastName}`;
+
+    // Criptăm parola
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Interogare SQL pentru inserare
     const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(sql, [name, email, hashedPassword], (err, result) => {
+    db.query(sql, [fullName, email, hashedPassword], (err, result) => {
       if (err) {
+        console.error('Eroare SQL:', err);
         return res.status(500).json({ error: 'Eroare la înregistrare.' });
       }
       res.status(201).json({ message: 'Utilizator înregistrat cu succes.' });
     });
   } catch (err) {
+    console.error('Eroare server:', err);
     res.status(500).json({ error: 'Eroare de server.' });
   }
 });
+
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;

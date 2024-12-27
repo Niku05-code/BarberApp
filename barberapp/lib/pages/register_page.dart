@@ -1,12 +1,72 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: use_build_context_synchronously
 
-class RegisterPage extends StatelessWidget {
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  RegisterPageState createState() => RegisterPageState();
+}
+
+class RegisterPageState extends State<RegisterPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
-  RegisterPage({super.key});
+
+  // Metoda pentru înregistrare
+  Future<void> register() async {
+    final name = nameController.text;
+    final surname = surnameController.text;
+    final email = emailController.text;
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Parolele nu se potrivesc!'),
+          backgroundColor: Colors.red,
+         ),
+      );
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:5000/register'), // URL-ul serverului
+        body: jsonEncode({
+          'name': name,
+          'surname': surname,
+          'email': email,
+          'password': password,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 201) {
+        // Înregistrarea a avut succes, navigăm către login
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration successful!')),
+        );
+      } else {
+        // Înregistrarea a eșuat
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed! Please try again.')),
+        );
+      }
+    } catch (error) {
+      // Gestionarea erorilor de rețea sau alte erori
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,71 +76,59 @@ class RegisterPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Nume',
-                border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'First Name',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: surnameController,
-              decoration: InputDecoration(
-                labelText: 'Prenume',
-                border: OutlineInputBorder(),
+              SizedBox(height: 16),
+              TextField(
+                controller: surnameController,
+                decoration: InputDecoration(
+                  labelText: 'Last Name',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+              SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
               ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(
-                labelText: 'Parolă',
-                border: OutlineInputBorder(),
+              SizedBox(height: 16),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true, // Ascunde textul cu steluțe
               ),
-              obscureText: true, // Ascunde textul cu steluțe
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: confirmPasswordController,
-              decoration: InputDecoration(
-                labelText: 'Confirmare parolă',
-                border: OutlineInputBorder(),
+              SizedBox(height: 16),
+              TextField(
+                controller: confirmPasswordController,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
               ),
-              obscureText: true,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Logica pentru înregistrare
-                String name = nameController.text;
-                String surname = surnameController.text;
-                String email = emailController.text;
-                String password = passwordController.text;
-                String confirmPassword = confirmPasswordController.text;
-
-                if (password != confirmPassword) {
-                  print('Parolele nu se potrivesc!');
-                } else {
-                  print(
-                      'Nume: $name, Prenume: $surname, Email: $email, Parolă: $password');
-                }
-              },
-              child: Text('Register'),
-            ),
-          ],
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: register, // Apelăm funcția de înregistrare
+                child: Text('Register'),
+              ),
+            ],
+          ),
         ),
       ),
     );
