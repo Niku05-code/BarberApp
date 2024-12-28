@@ -38,14 +38,15 @@ class RegisterPageState extends State<RegisterPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:5000/register'), // URL-ul serverului
+        Uri.parse('http://127.0.0.1:3000/register'), // URL-ul serverului
         body: jsonEncode({
-          'name': name,
-          'surname': surname,
+          'firstName': name,
+          'lastName': surname,
           'email': email,
           'password': password,
         }),
         headers: {'Content-Type': 'application/json'},
+        
       );
 
       if (response.statusCode == 201) {
@@ -55,6 +56,9 @@ class RegisterPageState extends State<RegisterPage> {
           SnackBar(content: Text('Registration successful!')),
         );
       } else {
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
         // Înregistrarea a eșuat
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration failed! Please try again.')),
