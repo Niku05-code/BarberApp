@@ -23,7 +23,7 @@ class LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/login'), // Schimbă cu URL-ul backend-ului tău
+        Uri.parse('http://127.0.0.1:3000/login'), // Schimbă cu URL-ul backend-ului tău
         body: jsonEncode({'email': email, 'password': password}),
         headers: {'Content-Type': 'application/json'},
       );

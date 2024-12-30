@@ -1,16 +1,24 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/material.dart';
 import 'package:barberapp/pages/login_page.dart';
 import 'package:barberapp/pages/register_page.dart';
-import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'pages/settings_page.dart';
 import 'pages/reservations_page.dart';
+import 'pages/login_register_page.dart';
 
 void main() {
   runApp(MaterialApp(
-    initialRoute: '/',
+    initialRoute: '/splash',
     routes: {
       '/': (context) => RegisterPage(),
       '/home': (context) => MyApp(),
       '/login': (context) => LoginPage(),
+      '/register': (context) => RegisterPage(),
+      '/login_register': (context) => MainPage(),
+      '/splash': (context) => SplashScreen(),
     },
   ));
 }
@@ -18,7 +26,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,6 +36,32 @@ class MyApp extends StatelessWidget {
       ),
       home: const MyHomePage(title: 'BarberApp'),
     );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    _checkLoginStatus(context);
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Future<void> _checkLoginStatus(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      Navigator.pushAndRemoveUntil(context, 
+      MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
+    } else {
+      Navigator.pushAndRemoveUntil(context, 
+      MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
+    }
   }
 }
 

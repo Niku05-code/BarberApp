@@ -18,7 +18,6 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  // Metoda pentru înregistrare
   Future<void> register() async {
     final name = nameController.text;
     final surname = surnameController.text;
@@ -46,7 +45,6 @@ class RegisterPageState extends State<RegisterPage> {
           'password': password,
         }),
         headers: {'Content-Type': 'application/json'},
-        
       );
 
       if (response.statusCode == 201) {
@@ -56,10 +54,6 @@ class RegisterPageState extends State<RegisterPage> {
           SnackBar(content: Text('Registration successful!')),
         );
       } else {
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
-
-        // Înregistrarea a eșuat
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration failed! Please try again.')),
         );
