@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:barberapp/main.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -32,12 +34,14 @@ class LoginPageState extends State<LoginPage> {
         final data = jsonDecode(response.body);
         final token = data['token']; // Presupunem că backend-ul returnează un token
 
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
         if (rememberMe) {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('authToken', token);
         }
 
-        Navigator.pushReplacementNamed(context, '/home'); // Navighează la pagina principală
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyApp()));
+
       } else {
         showDialog(
           context: context,
@@ -62,15 +66,6 @@ class LoginPageState extends State<LoginPage> {
       );
     }
   }
-
-  Future<void> checkAuth() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('authToken');
-
-  if (token != null) {
-    Navigator.pushReplacementNamed(context, '/home');
-  }
-}
 
   @override
   Widget build(BuildContext context) {

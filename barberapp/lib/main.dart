@@ -5,7 +5,7 @@ import 'package:barberapp/pages/login_page.dart';
 import 'package:barberapp/pages/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'pages/settings_page.dart';
+import 'pages/profile_page.dart';
 import 'pages/reservations_page.dart';
 import 'pages/login_register_page.dart';
 
@@ -53,9 +53,8 @@ class SplashScreen extends StatelessWidget {
 
   Future<void> _checkLoginStatus(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-    if (isLoggedIn) {
+    final token = prefs.getString('authToken');
+    if (token != null) {
       Navigator.pushAndRemoveUntil(context, 
       MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
     } else {
@@ -122,12 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Setări'),
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
                 );
               },
             ),

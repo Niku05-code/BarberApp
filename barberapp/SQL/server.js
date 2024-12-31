@@ -17,6 +17,16 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+function authenticateToken(req, res, next) {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Access denied' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    req.user = user;
+    next();
+  });
+}
 
 // Conexiune MySQL
 const db = mysql.createConnection({
@@ -62,7 +72,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -85,6 +94,8 @@ app.post('/login', (req, res) => {
     res.json({ message: 'Autentificare reușită.', token });
   });
 });
+
+
 
 // Start server
 app.listen(PORT, () => {

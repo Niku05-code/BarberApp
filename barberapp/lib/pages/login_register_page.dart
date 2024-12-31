@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'login_page.dart';
+import 'register_page.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -15,13 +17,13 @@ class MainPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
               },
               child: Text('Login'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/register');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
               },
               child: Text('Register'),
             ),
